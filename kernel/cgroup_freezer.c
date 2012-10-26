@@ -150,10 +150,10 @@ static void freezer_destroy(struct cgroup *cgroup)
 	kfree(freezer);
 }
 
-/* task is frozen or will freeze immediately when next it gets woken */
+/* task is frozen, skipped, or will freeze immediately when next woken */
 static bool is_task_frozen_enough(struct task_struct *task)
 {
-	return frozen(task) ||
+	return frozen(task) || freezer_should_skip(task) ||
 		(task_is_stopped_or_traced(task) && freezing(task));
 }
 
