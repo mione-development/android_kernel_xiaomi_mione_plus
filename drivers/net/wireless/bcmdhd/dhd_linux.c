@@ -2411,6 +2411,25 @@ dhd_open(struct net_device *net)
 
 		if (dhd->pub.busstate != DHD_BUS_DATA) {
 
+			/* Xiaomi Mione: Auto-detect firmware/nvram based on WiFi chip ID
+			 * BCM4329 = Mi 1 (M1, M1C, M1 Youth)
+			 * BCM4330 = Mi 1S, Mi 1S Youth
+			 */
+			{
+				uint16 chipID = (uint16)dhd_bus_chip_id(&dhd->pub);
+				if (chipID == BCM4329_CHIP_ID) {
+					strcpy(fw_path, "/vendor/firmware/fw_bcm4329.bin");
+					strcpy(nv_path, "/system/etc/wifi/nvram.txt");
+					printk("bcmdhd: BCM4329 detected, fw=%s nvram=%s\n",
+					       fw_path, nv_path);
+				} else if (chipID == BCM4330_CHIP_ID) {
+					strcpy(fw_path, "/vendor/firmware/fw_bcmdhd.bin");
+					strcpy(nv_path, "/system/etc/wifi/bcmdhd.cal");
+					printk("bcmdhd: BCM4330 detected, fw=%s nvram=%s\n",
+					       fw_path, nv_path);
+				}
+			}
+
 			/* try to bring up bus */
 			if ((ret = dhd_bus_start(&dhd->pub)) != 0) {
 				DHD_ERROR(("%s: failed with code %d\n", __FUNCTION__, ret));

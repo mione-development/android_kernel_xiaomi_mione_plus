@@ -113,7 +113,9 @@ static unsigned char mac_addr[IFHWADDRLEN] = { 0, 0x90, 0x4c, 0, 0, 0 };
 static int wifi_get_mac_addr(unsigned char *buf)
 {
 	uint rand_mac;
-	if (device_id != 0x4330)
+
+	/* Support both BCM4329 (Mi1) and BCM4330 (Mi1S) */
+	if (device_id != 0x4330 && device_id != 0x4329)
 		return -EINVAL;
 
 	if (!buf)
